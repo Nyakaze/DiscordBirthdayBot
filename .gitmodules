@@ -1,0 +1,3 @@
+[submodule "lib/Crovus"]
+	path = lib/Crovus
+	url = https://github.com/Nyakaze/Crovus

@@ -1,0 +1,32 @@
+services:
+  sadbot:
+    image: ghcr.io/nyakaze/sadbot:latest
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      Discord__Token: ${DISCORD_TOKEN}
+      Gifs__GiphyApiKey: ${GIPHY_API_KEY:-}
+      ConnectionStrings__Database: Host=postgres;Port=5432;Database=sadbot;Username=sadbot;Password=${POSTGRES_PASSWORD}
+      Logging__Console__FormatterName: json
+      TZ: UTC
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sadbot
+      POSTGRES_USER: sadbot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sadbot -d sadbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:

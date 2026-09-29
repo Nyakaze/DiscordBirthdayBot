@@ -1,0 +1,38 @@
+services:
+  sadbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sadbot:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      Discord__Token: ${DISCORD_TOKEN:?Set DISCORD_TOKEN in .env}
+      Gifs__GiphyApiKey: ${GIPHY_API_KEY:-}
+      ConnectionStrings__Database: Host=postgres;Port=5432;Database=sadbot;Username=sadbot;Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      Logging__Console__FormatterName: json
+      TZ: UTC
+    ports:
+      - "127.0.0.1:${HEALTH_PORT:-8080}:8080"
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sadbot
+      POSTGRES_USER: sadbot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sadbot -d sadbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
