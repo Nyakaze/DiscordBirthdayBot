@@ -6,7 +6,7 @@ COPY ["src/SadBot/SadBot.csproj", "src/SadBot/"]
 RUN dotnet restore "src/SadBot/SadBot.csproj"
 COPY lib/Crovus/ lib/Crovus/
 COPY src/SadBot/ src/SadBot/
-RUN dotnet publish "src/SadBot/SadBot.csproj" -c $BUILD_CONFIGURATION -o /app/publish --no-restore /p:UseAppHost=false
+RUN dotnet publish "src/SadBot/SadBot.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
