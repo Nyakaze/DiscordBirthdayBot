@@ -7,6 +7,7 @@ using SadBot.Data;
 using SadBot.Discord;
 using SadBot.Gifs;
 using SadBot.Modules.Birthdays;
+using SadBot.Modules.Moderation;
 
 if (args is ["--healthcheck", ..])
     return await ProbeHealthAsync();
@@ -37,6 +38,7 @@ builder.Services.AddSingleton(services =>
 builder.Services.AddHttpClient<IGifProvider, GiphyGifProvider>(http => http.Timeout = TimeSpan.FromSeconds(5));
 
 builder.Services.AddBirthdays();
+builder.Services.AddModeration();
 builder.Services.AddHostedService<DiscordBotService>();
 
 builder.Services.AddHealthChecks()
